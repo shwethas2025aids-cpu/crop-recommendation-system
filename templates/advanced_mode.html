@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Mode - Smart Crop Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <div>
+                    <h1>Smart Crop Advisor</h1>
+                    <p>Advanced Mode</p>
+                </div>
+            </div>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>🔬 Advanced Mode</h2>
+            <p>விரிவான மண் மற்றும் காலநிலை அளவீடுகள்</p>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-card">
+            <form id="advanced-form">
+
+                <!-- NPK VALUES -->
+                <div style="margin-bottom:8px;font-size:14px;font-weight:600;color:#1a3d1f;">
+                    NPK Values (kg/ha) — மண் சத்து அளவுகள்
+                </div>
+                <div class="npk-grid">
+                    <div class="npk-box">
+                        <label>N — Nitrogen</label>
+                        <input type="number" id="n-value" placeholder="e.g. 90" min="0" max="200">
+                        <span class="npk-tag">நைட்ரஜன்</span>
+                    </div>
+                    <div class="npk-box">
+                        <label>P — Phosphorus</label>
+                        <input type="number" id="p-value" placeholder="e.g. 40" min="0" max="200">
+                        <span class="npk-tag">பாஸ்பரஸ்</span>
+                    </div>
+                    <div class="npk-box">
+                        <label>K — Potassium</label>
+                        <input type="number" id="k-value" placeholder="e.g. 50" min="0" max="200">
+                        <span class="npk-tag">பொட்டாசியம்</span>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Temperature (°C) <span class="tamil-label">வெப்பநிலை</span></label>
+                    <input type="number" id="temp-value" placeholder="e.g. 28" min="10" max="50">
+                </div>
+
+                <div class="field-group">
+                    <label>Soil pH <span class="tamil-label">மண் அமிலத்தன்மை</span></label>
+                    <input type="number" id="ph-value" placeholder="e.g. 6.5" min="4" max="9" step="0.1">
+                </div>
+
+                <div class="field-group">
+                    <label>Annual Rainfall (mm) <span class="tamil-label">வருடாந்திர மழை</span></label>
+                    <input type="number" id="rainfall-value" placeholder="e.g. 800" min="100" max="3000">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    🔬 Analyze & Recommend / பகுப்பாய்வு செய்க
+                </button>
+
+            </form>
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        document.getElementById('advanced-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const n = document.getElementById('n-value').value;
+            const p = document.getElementById('p-value').value;
+            const k = document.getElementById('k-value').value;
+            const temp = document.getElementById('temp-value').value;
+            const ph = document.getElementById('ph-value').value;
+            const rainfall = document.getElementById('rainfall-value').value;
+
+            if (!n || !p || !k || !temp || !ph || !rainfall) {
+                alert('Please fill all fields / அனைத்து விவரங்களையும் நிரப்பவும்');
+                return;
+            }
+            window.location.href = `/output?mode=advanced&nitrogen=${n}&phosphorus=${p}&potassium=${k}&temperature=${temp}&ph=${ph}&rainfall=${rainfall}`;
+        });
+    </script>
+
+</body>
+</html>

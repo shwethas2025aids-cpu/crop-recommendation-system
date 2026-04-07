@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Analysis - Smart Crop Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <div>
+                    <h1>Smart Crop Advisor</h1>
+                    <p>Crop Analysis</p>
+                </div>
+            </div>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>🔍 Crop Analysis</h2>
+            <p>பயிரை தேர்ந்தெடுத்து விரிவான தகவல்களை பெறுங்கள்</p>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-card">
+
+            <div class="field-group">
+                <label>Select Category <span class="tamil-label">வகை தேர்வு</span></label>
+                <select id="category-filter" onchange="filterCrops()">
+                    <option value="All">All Categories / அனைத்து வகைகள்</option>
+                    <option value="Cereal">Cereals / தானியங்கள்</option>
+                    <option value="Pulse">Pulses / பருப்பு வகைகள்</option>
+                    <option value="Vegetable">Vegetables / காய்கறிகள்</option>
+                    <option value="Fruit">Fruits / பழங்கள்</option>
+                    <option value="Spice">Spices / மசாலா</option>
+                    <option value="Oilseed">Oilseeds / எண்ணெய் வித்துகள்</option>
+                    <option value="Cash Crop">Cash Crops / பணப் பயிர்கள்</option>
+                    <option value="Flower">Flowers / பூக்கள்</option>
+                </select>
+            </div>
+
+            <div class="field-group">
+                <label>Select Crop <span class="tamil-label">பயிர் தேர்வு</span></label>
+                <select id="crop-select" onchange="showCropInfo()">
+                    <option value="">Choose a crop / பயிரை தேர்வு செய்யுங்கள்</option>
+                </select>
+            </div>
+
+            <!-- Crop Info Card -->
+            <div class="crop-info-card" id="crop-info-card" style="display:none;">
+                <div class="crop-header">
+                    <div>
+                        <h2 id="ci-name"></h2>
+                        <p id="ci-tamil" class="tamil-name"></p>
+                        <span id="ci-category" class="category-badge"></span>
+                    </div>
+                </div>
+                <div class="crop-stats-grid" id="ci-stats"></div>
+                <div class="crop-desc" id="ci-desc"></div>
+                <button class="submit-btn" onclick="goToOutput()">
+                    📊 View Full Report
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        let allCrops = {};
+
+        async function loadCrops() {
+            const response = await fetch('/api/crops');
+            const data = await response.json();
+            allCrops = data.crops;
+            populateCropDropdown('All');
+        }
+
+        function filterCrops() {
+            const category = document.getElementById('category-filter').value;
+            populateCropDropdown(category);
+            document.getElementById('crop-info-card').style.display = 'none';
+        }
+
+        function populateCropDropdown(category) {
+            const select = document.getElementById('crop-select');
+            select.innerHTML = '<option value="">Choose a crop / பயிரை தேர்வு செய்யுங்கள்</option>';
+            for (const [key, crop] of Object.entries(allCrops)) {
+                if (category === 'All' || crop.category === category) {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = `${crop.name} / ${crop.tamil_name}`;
+                    select.appendChild(option);
+                }
+            }
+        }
+
+        function showCropInfo() {
+            const key = document.getElementById('crop-select').value;
+            if (!key) {
+                document.getElementById('crop-info-card').style.display = 'none';
+                return;
+            }
+            const crop = allCrops[key];
+            document.getElementById('ci-name').textContent = crop.name;
+            document.getElementById('ci-tamil').textContent = crop.tamil_name;
+            document.getElementById('ci-category').textContent = crop.category;
+            document.getElementById('ci-stats').innerHTML = `
+                <div class="stat-item"><span class="stat-key">🌱 Soil</span><span class="stat-val">${crop.soil}</span></div>
+                <div class="stat-item"><span class="stat-key">💧 Water</span><span class="stat-val">${crop.water}</span></div>
+                <div class="stat-item"><span class="stat-key">🌡️ Temp</span><span class="stat-val">${crop.temp}</span></div>
+                <div class="stat-item"><span class="stat-key">⚗️ pH</span><span class="stat-val">${crop.ph}</span></div>
+                <div class="stat-item"><span class="stat-key">📅 Season</span><span class="stat-val">${crop.season}</span></div>
+            `;
+            document.getElementById('ci-desc').textContent = crop.desc;
+            document.getElementById('crop-info-card').style.display = 'block';
+        }
+
+        function goToOutput() {
+            const key = document.getElementById('crop-select').value;
+            window.location.href = `/output?mode=analysis&crop=${key}`;
+        }
+
+        loadCrops();
+    </script>
+
+</body>
+</html>

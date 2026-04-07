@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendation Output - Smart Crop Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <div>
+                    <h1>Smart Crop Advisor</h1>
+                    <p>Recommendation Result</p>
+                </div>
+            </div>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>🌱 Your Recommendation</h2>
+            <p>உங்களுக்கான பயிர் பரிந்துரை</p>
+        </div>
+    </section>
+
+    <section class="output-section">
+        <div class="output-card">
+
+            <!-- Main Crop -->
+            <div class="main-crop">
+                <div class="crop-emoji" id="out-emoji">🌾</div>
+                <h1 class="crop-name" id="out-name">Loading...</h1>
+                <p class="crop-tamil" id="out-tamil"></p>
+                <span class="crop-category" id="out-category"></span>
+            </div>
+
+            <!-- Crop Details -->
+            <div class="details-card">
+                <h3>Crop Details / பயிர் விவரங்கள்</h3>
+                <div class="details-grid" id="out-details"></div>
+            </div>
+
+            <!-- Description -->
+            <div class="desc-card">
+                <h3>About this Crop / இந்த பயிரைப் பற்றி</h3>
+                <p id="out-desc"></p>
+            </div>
+
+            <!-- Top 3 Recommendations -->
+            <div class="top3-section">
+                <h3>Top 3 Recommendations / சிறந்த 3 பயிர்கள்</h3>
+                <div class="top3-grid" id="out-top3"></div>
+            </div>
+
+            <!-- Voice Output -->
+            <button class="voice-btn" onclick="speakResult()">
+                <span>🔊</span>
+                <span id="voice-label">Read Aloud / குரல் வழி படிக்க</span>
+            </button>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <a href="/" class="action-btn">🏠 Home</a>
+                <a href="/farmer" class="action-btn">🔄 Try Again</a>
+                <button class="action-btn" onclick="window.print()">🖨️ Print</button>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        async function loadOutput() {
+            const params = new URLSearchParams(window.location.search);
+            const mode = params.get('mode');
+
+            let apiUrl = '';
+
+            if (mode === 'farmer') {
+                const soil = params.get('soil');
+                const rainfall = params.get('rainfall');
+                const water = params.get('water');
+                const season = params.get('season');
+                apiUrl = `/api/recommend/farmer?soil=${soil}&rainfall=${rainfall}&water=${water}&season=${season}`;
+            } else if (mode === 'advanced') {
+                const n = params.get('nitrogen') || params.get('n');
+                const p = params.get('phosphorus') || params.get('p');
+                const k = params.get('potassium') || params.get('k');
+                const temp = params.get('temperature') || params.get('temp');
+                const ph = params.get('ph');
+                const rainfall = params.get('rainfall');
+                apiUrl = `/api/recommend/advanced?n=${n}&p=${p}&k=${k}&temp=${temp}&ph=${ph}&rainfall=${rainfall}`;
+            } else if (mode === 'analysis') {
+                const crop = params.get('crop');
+                apiUrl = `/api/crop/${crop}`;
+            }
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                displayResult(data);
+            } catch (error) {
+                document.getElementById('out-name').textContent = 'Error loading data';
+            }
+        }
+
+        const CROP_EMOJIS = {
+            'Cereal':'🌾', 'Pulse':'🫘', 'Vegetable':'🥦',
+            'Fruit':'🍎', 'Spice':'🌿', 'Oilseed':'🫚',
+            'Cash Crop':'💰', 'Flower':'🌸'
+        };
+
+        function displayResult(data) {
+            const crop = data.best || data;
+            document.getElementById('out-name').textContent = crop.name;
+            document.getElementById('out-tamil').textContent = crop.tamil_name;
+            document.getElementById('out-category').textContent = crop.category;
+            document.getElementById('out-emoji').textContent =
+                CROP_EMOJIS[crop.category] || '🌾';
+            document.getElementById('out-details').innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-key">🌱 Soil Type</span>
+                    <span class="detail-val">${crop.soil}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key">💧 Water Need</span>
+                    <span class="detail-val">${crop.water}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key">🌡️ Temperature</span>
+                    <span class="detail-val">${crop.temp}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key">⚗️ Soil pH</span>
+                    <span class="detail-val">${crop.ph}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key">📅 Best Season</span>
+                    <span class="detail-val">${crop.season}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-key">🏷️ Category</span>
+                    <span class="detail-val">${crop.category}</span>
+                </div>
+            `;
+            document.getElementById('out-desc').textContent = crop.desc;
+
+            if (data.top3) {
+                document.getElementById('out-top3').innerHTML = data.top3.map((c, i) => `
+                    <div class="top3-card ${i===0?'best':''}">
+                        <div class="top3-rank">#${i+1}</div>
+                        <div class="top3-emoji">${CROP_EMOJIS[c.category] || '🌾'}</div>
+                        <div class="top3-name">${c.name}</div>
+                        <div class="top3-tamil">${c.tamil_name}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function speakResult() {
+            const name = document.getElementById('out-name').textContent;
+            const tamil = document.getElementById('out-tamil').textContent;
+            const desc = document.getElementById('out-desc').textContent;
+            const label = document.getElementById('voice-label');
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const text = `The recommended crop is ${name}. Tamil name: ${tamil}. ${desc}`;
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'en-IN';
+                utter.rate = 0.9;
+                label.textContent = '🔊 Speaking...';
+                utter.onend = () => {
+                    label.textContent = 'Read Aloud / குரல் வழி படிக்க';
+                };
+                window.speechSynthesis.speak(utter);
+            } else {
+                alert('Voice not supported in this browser');
+            }
+        }
+
+        loadOutput();
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Calendar - Smart Crop Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <div>
+                    <h1>Smart Crop Advisor</h1>
+                    <p>Crop Calendar</p>
+                </div>
+            </div>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>📅 Crop Calendar</h2>
+            <p>மாதாந்திர பயிர் பரிந்துரை வரைப்படம்</p>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-card">
+
+            <div class="calendar-controls">
+                <div class="field-group">
+                    <label>Select Month <span class="tamil-label">மாதம் தேர்வு</span></label>
+                    <select id="month-select" onchange="renderCalendar()">
+                        <option value="0">January / ஜனவரி</option>
+                        <option value="1">February / பிப்ரவரி</option>
+                        <option value="2">March / மார்ச்</option>
+                        <option value="3">April / ஏப்ரல்</option>
+                        <option value="4">May / மே</option>
+                        <option value="5">June / ஜூன்</option>
+                        <option value="6">July / ஜூலை</option>
+                        <option value="7">August / ஆகஸ்ட்</option>
+                        <option value="8">September / செப்டம்பர்</option>
+                        <option value="9">October / அக்டோபர்</option>
+                        <option value="10">November / நவம்பர்</option>
+                        <option value="11">December / டிசம்பர்</option>
+                    </select>
+                </div>
+                <button class="auto-btn" onclick="autoDetectMonth()">
+                    📍 Current Month / இந்த மாதம்
+                </button>
+            </div>
+
+            <div class="chart-section">
+                <h3 id="chart-title">Recommended Crops</h3>
+                <p class="chart-hint">Hover or tap a bar for details</p>
+                <div id="bar-chart" class="bar-chart"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        const COLORS = ['#1D9E75','#3B6D11','#639922','#0F6E56','#97C459'];
+        const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+        async function renderCalendar() {
+            const month = document.getElementById('month-select').value;
+            const response = await fetch(`/api/calendar?month=${month}`);
+            const data = await response.json();
+            const crops = data.crops;
+            const maxScore = crops[0].score;
+
+            document.getElementById('chart-title').textContent =
+                `Top Crops for ${MONTHS[month]}`;
+
+            const chart = document.getElementById('bar-chart');
+            chart.innerHTML = crops.map((item, i) => `
+                <div class="bar-row">
+                    <div class="bar-label">${item.name}</div>
+                    <div class="bar-track">
+                        <div class="bar-fill" style="width:${Math.round(item.score/maxScore*100)}%;background:${COLORS[i]}">
+                            <span class="bar-score">${item.score}%</span>
+                        </div>
+                        <div class="bar-tooltip">${item.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function autoDetectMonth() {
+            const response = await fetch('/api/current_month');
+            const data = await response.json();
+            document.getElementById('month-select').value = data.month;
+            renderCalendar();
+        }
+
+        autoDetectMonth();
+    </script>
+
+</body>
+</html>

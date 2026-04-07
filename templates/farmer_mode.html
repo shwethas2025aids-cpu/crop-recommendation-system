@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Mode - Smart Crop Advisor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <div>
+                    <h1>Smart Crop Advisor</h1>
+                    <p>Farmer Mode</p>
+                </div>
+            </div>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>👨‍🌾 Farmer Mode</h2>
+            <p>உங்கள் தோட்ட விவரங்களை தேர்வு செய்யுங்கள்</p>
+        </div>
+    </section>
+
+    <section class="form-section">
+        <div class="form-card">
+            <form id="farmer-form">
+
+                <div class="field-group">
+                    <label>Soil Type <span class="tamil-label">மண் வகை</span></label>
+                    <select id="soil" required>
+                        <option value="">Select / தேர்வு செய்யுங்கள்</option>
+                        <option value="clay">Clay / களிமண்</option>
+                        <option value="sandy">Sandy / மணல் மண்</option>
+                        <option value="loamy">Loamy / வண்டல் மண்</option>
+                        <option value="black">Black Cotton / கருப்பு மண்</option>
+                        <option value="red">Red Laterite / சிவப்பு மண்</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Rainfall Level <span class="tamil-label">மழையளவு</span></label>
+                    <select id="rainfall" required>
+                        <option value="">Select / தேர்வு செய்யுங்கள்</option>
+                        <option value="low">Low (below 500mm) / குறைவு</option>
+                        <option value="medium">Medium (500–1000mm) / நடுத்தரம்</option>
+                        <option value="high">High (above 1000mm) / அதிகம்</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Water Source <span class="tamil-label">நீர் ஆதாரம்</span></label>
+                    <select id="water" required>
+                        <option value="">Select / தேர்வு செய்யுங்கள்</option>
+                        <option value="canal">Canal / கால்வாய்</option>
+                        <option value="well">Well / கிணறு</option>
+                        <option value="rain">Rainwater / மழை நீர்</option>
+                        <option value="drip">Drip Irrigation / சொட்டு நீர்ப்பாசனம்</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label>Season <span class="tamil-label">பருவகாலம்</span></label>
+                    <select id="season" required>
+                        <option value="">Select / தேர்வு செய்யுங்கள்</option>
+                        <option value="kharif">Kharif / காரிப் (Jun–Oct)</option>
+                        <option value="rabi">Rabi / ரபி (Nov–Mar)</option>
+                        <option value="zaid">Zaid / ஜைத் (Mar–Jun)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    🌱 Get Recommendation / பரிந்துரை பெறுக
+                </button>
+
+            </form>
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        document.getElementById('farmer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const soil = document.getElementById('soil').value;
+            const rainfall = document.getElementById('rainfall').value;
+            const water = document.getElementById('water').value;
+            const season = document.getElementById('season').value;
+            if (!soil || !rainfall || !water || !season) {
+                alert('Please fill all fields / அனைத்து விவரங்களையும் நிரப்பவும்');
+                return;
+            }
+            window.location.href = `/output?mode=farmer&soil=${soil}&rainfall=${rainfall}&water=${water}&season=${season}`;
+        });
+    </script>
+
+</body>
+</html>

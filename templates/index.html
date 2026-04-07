@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Crop Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">🌾</span>
+                <div>
+                    <h1>Smart Crop Advisor</h1>
+                    <p>AI-Powered Crop Recommendation System</p>
+                </div>
+            </div>
+            <div class="lang-toggle">
+                <button class="lang-btn active" id="btn-en" onclick="setLang('en')">🇬🇧 English</button>
+                <button class="lang-btn" id="btn-ta" onclick="setLang('ta')">🇮🇳 தமிழ்</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2 id="hero-title">Choose Your Mode</h2>
+            <p id="hero-sub">Select the best mode for your farming needs</p>
+        </div>
+    </section>
+
+    <!-- MODE CARDS -->
+    <section class="modes-section">
+        <div class="modes-grid">
+
+            <div class="mode-card" onclick="window.location.href='/farmer'">
+                <div class="mode-icon">👨‍🌾</div>
+                <h3 id="lbl-farmer">Farmer Mode</h3>
+                <p id="desc-farmer">Simple dropdown inputs for quick recommendations</p>
+                <span class="mode-tag">Easy</span>
+            </div>
+
+            <div class="mode-card" onclick="window.location.href='/advanced'">
+                <div class="mode-icon">🔬</div>
+                <h3 id="lbl-advanced">Advanced Mode</h3>
+                <p id="desc-advanced">Enter NPK, pH, temperature for precise results</p>
+                <span class="mode-tag">Detailed</span>
+            </div>
+
+            <div class="mode-card" onclick="window.location.href='/analysis'">
+                <div class="mode-icon">🔍</div>
+                <h3 id="lbl-analysis">Crop Analysis</h3>
+                <p id="desc-analysis">Analyze detailed information about any crop</p>
+                <span class="mode-tag">Research</span>
+            </div>
+
+            <div class="mode-card" onclick="window.location.href='/calendar'">
+                <div class="mode-icon">📅</div>
+                <h3 id="lbl-calendar">Crop Calendar</h3>
+                <p id="desc-calendar">Monthly bar graph of recommended crops</p>
+                <span class="mode-tag">Calendar</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- STATS SECTION -->
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3>84+</h3>
+                <p>Crops Available</p>
+            </div>
+            <div class="stat-box">
+                <h3>8</h3>
+                <p>Categories</p>
+            </div>
+            <div class="stat-box">
+                <h3>4</h3>
+                <p>Smart Modes</p>
+            </div>
+            <div class="stat-box">
+                <h3>2</h3>
+                <p>Languages</p>
+            </div>
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
