@@ -58,12 +58,6 @@
                 <div class="top3-grid" id="out-top3"></div>
             </div>
 
-            <!-- Voice Output -->
-            <button class="voice-btn" onclick="speakResult()">
-                <span>🔊</span>
-                <span id="voice-label">Read Aloud / குரல் வழி படிக்க</span>
-            </button>
-
             <!-- Action Buttons -->
             <div class="action-buttons">
                 <a href="/" class="action-btn">🏠 Home</a>
@@ -79,7 +73,6 @@
         async function loadOutput() {
             const params = new URLSearchParams(window.location.search);
             const mode = params.get('mode');
-
             let apiUrl = '';
 
             if (mode === 'farmer') {
@@ -160,28 +153,6 @@
                         <div class="top3-tamil">${c.tamil_name}</div>
                     </div>
                 `).join('');
-            }
-        }
-
-        function speakResult() {
-            const name = document.getElementById('out-name').textContent;
-            const tamil = document.getElementById('out-tamil').textContent;
-            const desc = document.getElementById('out-desc').textContent;
-            const label = document.getElementById('voice-label');
-
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const text = `The recommended crop is ${name}. Tamil name: ${tamil}. ${desc}`;
-                const utter = new SpeechSynthesisUtterance(text);
-                utter.lang = 'en-IN';
-                utter.rate = 0.9;
-                label.textContent = '🔊 Speaking...';
-                utter.onend = () => {
-                    label.textContent = 'Read Aloud / குரல் வழி படிக்க';
-                };
-                window.speechSynthesis.speak(utter);
-            } else {
-                alert('Voice not supported in this browser');
             }
         }
 
